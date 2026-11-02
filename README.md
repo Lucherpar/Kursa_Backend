@@ -1,9 +1,11 @@
-# Kursa_Backtend
+# Kursa_Backend
 
 ![Status](https://img.shields.io/badge/status-en%20desarrollo-yellow)
 ![License](https://img.shields.io/badge/license-MIT-blue)
 
 > Proyecto **kursa** — Repositorio oficial del equipo. Este documento define las normas de colaboración, el flujo de trabajo con Git y los criterios de calidad que seguimos todos los integrantes.
+
+🔗 **Repositorio Frontend:** [Kursa_Frontend](https://github.com/Lucherpar/Kursa_Frontend.git)
 
 ---
 
