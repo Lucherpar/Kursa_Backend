@@ -1,0 +1,14 @@
+import { Pool } from "pg";
+import { drizzle } from "drizzle-orm/pg-pool";
+import * as schema from "../../drizzle/schema";
+import { env } from "./env";
+
+export const pool = new Pool({
+  connectionString: env.DATABASE_URL,
+  ssl: env.DATABASE_URL.includes("neon.tech") ? { rejectUnauthorized: false } : false,
+  max: 10,
+});
+
+export const db = drizzle(pool, { schema });
+
+export default db;
