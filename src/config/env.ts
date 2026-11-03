@@ -9,9 +9,9 @@ const envSchema = z.object({
   JWT_EXPIRES_IN: z.string().default("7d"),
   REFRESH_TOKEN_SECRET: z.string().min(1),
   REFRESH_TOKEN_EXPIRES_IN: z.string().default("30d"),
-  PORT: z.string().transform(Number).default(4000),
+  PORT: z.string().transform(Number).default("4000"),
   CORS_ORIGIN: z.string().default("http://localhost:5173"),
-  MAX_FILE_SIZE: z.string().transform(Number).default(10485760),
+  MAX_FILE_SIZE: z.string().transform(Number).default("10485760"),
   SOCKET_ORIGIN: z.string().default("http://localhost:5173"),
 });
 

@@ -1,3 +1,5 @@
+import type { Request } from "express";
+
 export type UserRole = "admin" | "profesor" | "estudiante";
 
 export interface JWTPayload {
@@ -6,6 +8,6 @@ export interface JWTPayload {
   role: UserRole;
 }
 
-export interface AuthenticatedRequest {
+export interface AuthenticatedRequest extends Request {
   user?: JWTPayload;
 }

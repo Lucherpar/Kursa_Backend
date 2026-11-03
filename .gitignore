@@ -9,3 +9,9 @@ coverage/
 .DS_Store
 uploads/
 *.tsbuildinfo
+
+# Artefactos de compilación generados junto al esquema
+drizzle/**/*.js
+drizzle/**/*.js.map
+drizzle/**/*.d.ts
+drizzle/**/*.d.ts.map

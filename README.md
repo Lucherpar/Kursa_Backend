@@ -1,91 +1,248 @@
-# Kursa_Backend
+# Kursa · Backend
 
-![Status](https://img.shields.io/badge/status-en%20desarrollo-yellow)
-![License](https://img.shields.io/badge/license-MIT-blue)
+![Estado](https://img.shields.io/badge/estado-en%20desarrollo-yellow)
+![Licencia](https://img.shields.io/badge/licencia-MIT-blue)
+![Node](https://img.shields.io/badge/node-%3E%3D20-339933?logo=node.js&logoColor=white)
+![TypeScript](https://img.shields.io/badge/typescript-5.x-3178C6?logo=typescript&logoColor=white)
+![Express](https://img.shields.io/badge/express-4.x-000000?logo=express&logoColor=white)
+![PostgreSQL](https://img.shields.io/badge/postgresql-Neon-4169E1?logo=postgresql&logoColor=white)
+![Tests](https://img.shields.io/badge/tests-vitest-6E9F18?logo=vitest&logoColor=white)
 
-> Proyecto **kursa** — Repositorio oficial del equipo. Este documento define las normas de colaboración, el flujo de trabajo con Git y los criterios de calidad que seguimos todos los integrantes.
+API REST y servidor de tiempo real de **Kursa**, una plataforma educativa inspirada en Aules para la gestión de cursos, asignaturas, lecciones, tareas, entregas y videollamadas.
 
-🔗 **Repositorio Frontend:** [Kursa_Frontend](https://github.com/Lucherpar/Kursa_Frontend.git)
-
----
-
-## 📑 Tabla de Contenidos
-
-- [Equipo y Roles](#-equipo-y-roles)
-- [Definition of Done (DoD)](#-definition-of-done-dod)
-- [Convención de Ramas y Flujo de Trabajo](#-convención-de-ramas-y-flujo-de-trabajo)
-  - [Estructura de Ramas](#estructura-de-ramas)
-  - [Flujo de Trabajo Paso a Paso](#flujo-de-trabajo-paso-a-paso)
-- [Buenas Prácticas](#-buenas-prácticas)
+> **Repositorio hermano:** [Kursa Frontend](https://github.com/Lucherpar/Kursa_Frontend) · **Documentación:** [docs/](docs/README.md)
 
 ---
 
-## 👥 Equipo y Roles
+## Tabla de contenidos
 
-| Integrante | Rol |
+- [Descripción](#descripción)
+- [Stack tecnológico](#stack-tecnológico)
+- [Arquitectura](#arquitectura)
+- [Requisitos](#requisitos)
+- [Instalación rápida](#instalación-rápida)
+- [Scripts disponibles](#scripts-disponibles)
+- [Estructura del proyecto](#estructura-del-proyecto)
+- [Variables de entorno](#variables-de-entorno)
+- [API](#api)
+- [Calidad y pruebas](#calidad-y-pruebas)
+- [Equipo](#equipo)
+- [Documentación](#documentación)
+- [Licencia](#licencia)
+
+---
+
+## Descripción
+
+Kursa Backend expone una API REST (`/api`) y un canal WebSocket (Socket.IO) que da soporte a:
+
+- Autenticación con **JWT** (access + refresh token) y control de acceso por roles (`admin`, `profesor`, `estudiante`).
+- Gestión de **cursos**, **asignaturas** y **lecciones** con contenidos de tipo texto, imagen, vídeo y archivo.
+- **Inscripciones** a cursos y consulta de matrícula.
+- **Tareas**: creación, entrega de archivos, listado de entregas y calificación con feedback.
+- **Subida de archivos** con validación de MIME y límite de tamaño.
+- **Grabaciones** asociadas a asignaturas.
+- **Tiempo real**: salas (rooms), señalización para videollamadas y chat.
+
+El proyecto **no utiliza inteligencia artificial**: toda la lógica es determinista y basada en reglas.
+
+---
+
+## Stack tecnológico
+
+| Área | Tecnología |
 | :--- | :--- |
-| **SALVADOR GÓMEZ SÁNCHEZ** | Product Owner (PO) & Developer (Dev) |
-| **LUCAS HERNÁNDEZ PARDO** | Scrum Master (SM) & Developer (Dev) |
-| **VICENTE PÉREZ JAVIER** | Developer (Dev) |
-| **ALICIA DEL CARMEN ROS VILLALBA** | Developer (Dev) |
+| Runtime | Node.js 20+ |
+| Lenguaje | TypeScript 5 |
+| Framework HTTP | Express 4 |
+| Base de datos | PostgreSQL (Neon) |
+| ORM / migraciones | Drizzle ORM + drizzle-kit |
+| Autenticación | JSON Web Tokens (`jsonwebtoken`) + `bcryptjs` |
+| Validación | Zod |
+| Tiempo real | Socket.IO |
+| Subida de archivos | Multer |
+| Seguridad | Helmet, CORS, express-rate-limit |
+| Testing | Vitest |
 
 ---
 
-## ✅ Definition of Done (DoD)
+## Arquitectura
 
-Una tarea se considera **terminada** únicamente cuando cumple **todos** los siguientes criterios:
+El backend sigue una arquitectura **por capas**, con dependencias unidireccionales:
 
-1. **Funciona localmente sin errores.** El código compila y se ejecuta correctamente en el entorno local del desarrollador, sin errores ni warnings críticos.
-2. **Está vinculada a un Issue.** Toda tarea tiene su Issue asociado en GitHub, y este ha sido actualizado con el estado correspondiente (en progreso → cerrado).
-3. **Ha sido revisada por otro compañero.** La Pull Request correspondiente cuenta con al menos **una aprobación** de otro miembro del equipo antes de su integración.
-4. **Cumple los criterios de aceptación.** La funcionalidad implementada satisface lo descrito en el Issue y no rompe funcionalidades existentes.
+```
+routes → middleware → controllers → services → db (Drizzle) → PostgreSQL
+```
 
-> ⚠️ Si alguno de estos puntos no se cumple, la tarea **no está terminada** y no puede integrarse a `develop`.
+- **routes**: define endpoints y aplica middleware (auth, roles, validación, upload).
+- **middleware**: autenticación, autorización, validación con Zod, manejo de errores y subida de archivos.
+- **controllers**: traducen HTTP ↔ dominio y formatean respuestas.
+- **services**: lógica de negocio y acceso a datos.
+- **db**: pool de conexiones y esquema Drizzle.
 
----
-
-## 🌿 Convención de Ramas y Flujo de Trabajo
-
-Nuestro repositorio sigue una estructura de ramas en **tres niveles** que garantiza estabilidad y trazabilidad en el desarrollo.
-
-### Estructura de Ramas
-
-#### 🟢 `main`
-- Es la **rama principal** del proyecto y refleja el estado estable y productivo.
-- **Está protegida**: cualquier cambio integrado aquí requiere **obligatoriamente** una Pull Request (PR) aprobada.
-- No se permite hacer push directo sobre esta rama.
-
-#### 🟡 `develop`
-- Es la rama de **desarrollo e integración**, donde los desarrolladores integran sus tareas terminadas.
-- Antes de empezar cualquier tarea, es **obligatorio crear un "Issue"** que la describa y permita llevar el seguimiento de su estado.
-- Las PRs hacia `develop` deben cumplir el [Definition of Done](#-definition-of-done-dod).
-
-#### 🔵 `feature/[nombre-tarea]`
-- Son las ramas de **trabajo aislado** que cada desarrollador crea a partir de `develop` para implementar una tarea concreta.
-- El nombre debe ser descriptivo y en minúsculas, usando guiones (ej.: `feature/login-usuario`, `feature/carrito-compras`).
-- Una vez la tarea esté **completa y cumpla el DoD**, se realiza el **merge a `develop`** mediante Pull Request.
-
-### Flujo de Trabajo Paso a Paso
-1. **Crear el Issue** con la descripción de la tarea.
-2. **Crear la rama** desde `develop`: `git checkout -b feature/[nombre-tarea] develop`
-3. **Desarrollar** la tarea en la rama feature.
-4. **Verificar el DoD** (funciona localmente, criterios de aceptación, etc.).
-5. **Abrir una Pull Request** hacia `develop` y solicitar revisión a otro compañero.
-6. **Merge a `develop`** tras la aprobación.
-7. **PR de `develop` a `main`** cuando se cierre una versión estable.
+El detalle completo está en [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
 
 ---
 
-## 🧭 Buenas Prácticas
+## Requisitos
 
-- 🔹 Haz **commits atómicos** con mensajes claros (ej.: `feat: agrega validación de email`).
-- 🔹 Mantén tu rama `feature` **actualizada** con `develop` para evitar conflictos.
-- 🔹 **No subas** código comentado, credenciales ni archivos innecesarios.
-- 🔹 Revisa las PRs de tus compañeros con **feedback constructivo y respetuoso**.
-- 🔹 Ante cualquier duda sobre el flujo, consulta al **Scrum Master** o al **Product Owner**.
+- **Node.js** ≥ 20 y **npm** ≥ 10.
+- Una base de datos **PostgreSQL** (recomendado: [Neon](https://neon.tech), plan gratuito).
 
 ---
 
-<p align="center">
-  <sub>Hecho con 💙 por el equipo de <strong>kursa</strong></sub>
-</p>
+## Instalación rápida
+
+```bash
+# 1. Clonar el repositorio
+git clone https://github.com/Lucherpar/Kursa_Backend.git
+cd Kursa_Backend
+
+# 2. Instalar dependencias
+npm ci
+
+# 3. Configurar variables de entorno
+cp .env.example .env
+# edita .env con tu DATABASE_URL, JWT_SECRET y REFRESH_TOKEN_SECRET
+
+# 4. Crear las tablas en la base de datos
+npm run db:push
+
+# 5. Arrancar en desarrollo
+npm run dev
+```
+
+La API quedará disponible en `http://localhost:4000/api`.
+
+> Guía detallada (incluida la creación de la base de datos en Neon): [docs/INSTALLATION.md](docs/INSTALLATION.md)
+
+---
+
+## Scripts disponibles
+
+| Script | Descripción |
+| :--- | :--- |
+| `npm run dev` | Inicia el servidor en modo desarrollo con `ts-node`. |
+| `npm run build` | Compila TypeScript a `dist/`. |
+| `npm start` | Ejecuta la versión compilada (`dist/src/app.js`). |
+| `npm run test` | Ejecuta la suite de tests con Vitest. |
+| `npm run test:watch` | Ejecuta los tests en modo vigilancia. |
+| `npm run db:generate` | Genera migraciones SQL a partir del esquema Drizzle. |
+| `npm run db:push` | Sincroniza el esquema directamente con la base de datos. |
+| `npm run db:migrate` | Aplica las migraciones generadas. |
+| `npm run db:studio` | Abre Drizzle Studio para inspeccionar la base de datos. |
+
+---
+
+## Estructura del proyecto
+
+```
+Kursa_Backend/
+├── drizzle/
+│   └── schema.ts              # Esquema de tablas y enums
+├── src/
+│   ├── config/                # env, db (pool + Drizzle), jwt
+│   ├── controllers/           # auth, course, assignment
+│   ├── middleware/            # auth, roles, validación, errores, upload
+│   ├── routes/                # definición de endpoints
+│   ├── services/              # lógica de negocio
+│   ├── socket/                # servidor Socket.IO y eventos
+│   ├── types/                 # tipos y esquemas Zod
+│   ├── utils/                 # constantes, respuestas, logger
+│   └── app.ts                 # bootstrap de Express + Socket.IO
+├── docs/                      # documentación del proyecto
+├── drizzle.config.ts
+├── tsconfig.json
+└── vitest.config.ts
+```
+
+---
+
+## Variables de entorno
+
+| Variable | Obligatoria | Por defecto | Descripción |
+| :--- | :---: | :--- | :--- |
+| `DATABASE_URL` | ✅ | — | Cadena de conexión PostgreSQL/Neon. |
+| `JWT_SECRET` | ✅ | — | Secreto para firmar access tokens. |
+| `REFRESH_TOKEN_SECRET` | ✅ | — | Secreto para firmar refresh tokens. |
+| `JWT_EXPIRES_IN` | ❌ | `7d` | Caducidad del access token. |
+| `REFRESH_TOKEN_EXPIRES_IN` | ❌ | `30d` | Caducidad del refresh token. |
+| `PORT` | ❌ | `4000` | Puerto HTTP. |
+| `CORS_ORIGIN` | ❌ | `http://localhost:5173` | Origen permitido por CORS. |
+| `SOCKET_ORIGIN` | ❌ | `http://localhost:5173` | Origen permitido por Socket.IO. |
+| `MAX_FILE_SIZE` | ❌ | `10485760` | Tamaño máximo de archivo (bytes). |
+| `UPLOAD_DIR` | ❌ | `/tmp/uploads` | Directorio de subidas. |
+
+Detalle completo en [docs/ENVIRONMENT.md](docs/ENVIRONMENT.md).
+
+---
+
+## API
+
+La API está versionada bajo el prefijo `/api`. Todas las respuestas siguen el formato:
+
+```json
+{ "success": true, "message": "opcional", "data": { } }
+```
+
+Endpoints principales:
+
+| Método | Ruta | Auth | Descripción |
+| :--- | :--- | :---: | :--- |
+| `POST` | `/api/auth/register` | — | Registro de usuario. |
+| `POST` | `/api/auth/login` | — | Inicio de sesión. |
+| `POST` | `/api/auth/refresh` | — | Renueva el access token. |
+| `GET` | `/api/auth/me` | ✅ | Datos del usuario autenticado. |
+| `GET` | `/api/courses` | — | Lista de cursos. |
+| `POST` | `/api/courses` | 🔒 admin/profesor | Crea un curso. |
+| `GET` | `/api/courses/:courseId/subjects` | — | Asignaturas de un curso. |
+| `GET` | `/api/subjects/:subjectId/lessons` | — | Lecciones de una asignatura. |
+| `POST` | `/api/assignments/:assignmentId/submit` | ✅ | Entrega de tarea con archivos. |
+| `PATCH` | `/api/submissions/:submissionId/grade` | 🔒 admin/profesor | Califica una entrega. |
+
+La referencia completa está en [docs/API.md](docs/API.md).
+
+---
+
+## Calidad y pruebas
+
+Este repositorio aplica una política de calidad obligatoria descrita en **[docs/QUALITY.md](docs/QUALITY.md)**. Como mínimo, cualquier cambio debe superar:
+
+```bash
+npm run test     # obligatorio
+npm run build    # obligatorio
+```
+
+Actualmente la suite incluye tests de esquemas Zod, helpers de respuesta y constantes.
+
+---
+
+## Equipo
+
+| Integrante | Rol | GitHub |
+| :--- | :--- | :--- |
+| Salvador Gómez Sánchez | Product Owner & Developer | [@Salvags92](https://github.com/Salvags92) |
+| Lucas Hernández Pardo | Scrum Master & Developer | [@Lucherpar](https://github.com/Lucherpar) |
+| Vicente Pérez Javier | Developer | [@Vicente1DAW](https://github.com/Vicente1DAW) |
+| Alicia del Carmen Ros Villalba | Developer | [@cocodepiel](https://github.com/cocodepiel) |
+
+---
+
+## Documentación
+
+| Documento | Contenido |
+| :--- | :--- |
+| [docs/README.md](docs/README.md) | Índice de la documentación. |
+| [docs/INSTALLATION.md](docs/INSTALLATION.md) | Instalación y configuración paso a paso. |
+| [docs/ENVIRONMENT.md](docs/ENVIRONMENT.md) | Variables de entorno. |
+| [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) | Arquitectura y flujo de datos. |
+| [docs/API.md](docs/API.md) | Referencia de endpoints y WebSocket. |
+| [docs/DATABASE.md](docs/DATABASE.md) | Modelo de datos. |
+| [docs/QUALITY.md](docs/QUALITY.md) | Política de calidad (obligatoria). |
+| [docs/CONTRIBUTING.md](docs/CONTRIBUTING.md) | Flujo de trabajo y convenciones. |
+
+---
+
+## Licencia
+
+Este proyecto se distribuye bajo licencia **MIT**. Consulta el archivo [LICENSE](LICENSE) si está disponible en el repositorio.
