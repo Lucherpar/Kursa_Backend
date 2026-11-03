@@ -8,6 +8,10 @@ export interface JWTPayload {
   role: UserRole;
 }
 
+export interface RefreshTokenPayload {
+  userId: number;
+}
+
 export interface AuthenticatedRequest extends Request {
   user?: JWTPayload;
 }
