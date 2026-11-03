@@ -5,7 +5,7 @@ import bcrypt from "bcryptjs";
 import { signAccessToken, signRefreshToken, verifyRefreshToken } from "../config/jwt";
 import { HTTP_STATUS } from "../utils/constants";
 import { AppError } from "../utils/errors";
-import { JWTPayload, UserRole } from "../types";
+import { RefreshTokenPayload, UserRole } from "../types";
 
 const BCRYPT_ROUNDS = 10;
 
@@ -72,10 +72,10 @@ export const authService = {
   },
 
   async refresh(refreshToken: string): Promise<{ accessToken: string }> {
-    let decoded: Partial<JWTPayload>;
+    let decoded: RefreshTokenPayload;
 
     try {
-      decoded = verifyRefreshToken(refreshToken) as Partial<JWTPayload>;
+      decoded = verifyRefreshToken(refreshToken);
     } catch {
       throw new AppError("Refresh token inválido o expirado", HTTP_STATUS.UNAUTHORIZED);
     }
