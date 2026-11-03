@@ -4,7 +4,7 @@ import { successResponse, errorResponse } from "../utils/response";
 import { HTTP_STATUS } from "../utils/constants";
 import { assignmentSchema } from "../types/schemas";
 import { AuthenticatedRequest } from "../types";
-import { upload } from "../middleware/upload";
+import { upload } from "../middleware/upload.middleware";
 
 export const assignmentController = {
   async create(req: AuthenticatedRequest, res: Response): Promise<void> {

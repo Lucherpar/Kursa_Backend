@@ -1,13 +1,13 @@
 import { Request, Response, NextFunction } from "express";
 import { verifyAccessToken } from "../config/jwt";
-import { USER_ROLES } from "../utils/constants";
-import { AuthenticatedRequest } from "../types";
+import { AuthenticatedRequest, JWTPayload, UserRole } from "../types";
 
-export const authenticate = (req: AuthenticatedRequest, res: Response, next: NextFunction): void => {
+export const authenticate = (req: Request, res: Response, next: NextFunction): void => {
+  const authReq = req as AuthenticatedRequest;
   const authHeader = req.headers.authorization;
 
   if (!authHeader?.startsWith("Bearer ")) {
-    res.status(USER_ROLES.ADMIN === "admin" ? 401 : 401).json({ success: false, message: "Token no proporcionado" });
+    res.status(401).json({ success: false, message: "Token no proporcionado" });
     return;
   }
 
@@ -15,16 +15,17 @@ export const authenticate = (req: AuthenticatedRequest, res: Response, next: Nex
 
   try {
     const decoded = verifyAccessToken(token);
-    req.user = decoded as JWTPayload;
+    authReq.user = decoded as JWTPayload;
     next();
-  } catch (error) {
+  } catch {
     res.status(401).json({ success: false, message: "Token inválido o expirado" });
   }
 };
 
 export const authorize = (...roles: UserRole[]) => {
-  return (req: AuthenticatedRequest, res: Response, next: NextFunction): void => {
-    if (!req.user || !roles.includes(req.user.role)) {
+  return (req: Request, res: Response, next: NextFunction): void => {
+    const authReq = req as AuthenticatedRequest;
+    if (!authReq.user || !roles.includes(authReq.user.role)) {
       res.status(403).json({ success: false, message: "Acceso denegado: rol insuficiente" });
       return;
     }

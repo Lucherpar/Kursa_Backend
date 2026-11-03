@@ -4,7 +4,16 @@ import { eq, and } from "drizzle-orm";
 
 export const assignmentService = {
   async create(subjectId: number, title: string, description: string | undefined, dueDate: string | undefined, maxFiles: number) {
-    const [assignment] = await db.insert(assignments).values({ subjectId, title, description, dueDate, maxFiles }).returning();
+    const [assignment] = await db
+      .insert(assignments)
+      .values({
+        subjectId,
+        title,
+        description,
+        dueDate: dueDate ? new Date(dueDate) : undefined,
+        maxFiles,
+      })
+      .returning();
     return assignment;
   },
 

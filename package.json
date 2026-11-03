@@ -2,17 +2,26 @@
   "name": "kursa_backend",
   "version": "1.0.0",
   "description": "Plataforma educativa tipo Aules - Backend Node.js + TypeScript + PostgreSQL (Neon)",
-  "main": "dist/app.js",
+  "main": "dist/src/app.js",
   "scripts": {
     "dev": "ts-node src/app.ts",
     "build": "tsc",
-    "start": "node dist/app.js",
+    "start": "node dist/src/app.js",
     "db:generate": "drizzle-kit generate",
     "db:push": "drizzle-kit push",
     "db:migrate": "drizzle-kit migrate",
-    "db:studio": "drizzle-kit studio"
+    "db:studio": "drizzle-kit studio",
+    "test": "vitest run",
+    "test:watch": "vitest"
   },
-  "keywords": ["kursa", "education", "nodejs", "typescript", "postgresql", "neon"],
+  "keywords": [
+    "kursa",
+    "education",
+    "nodejs",
+    "typescript",
+    "postgresql",
+    "neon"
+  ],
   "author": "Equipo Kursa",
   "license": "MIT",
   "dependencies": {
@@ -27,8 +36,8 @@
     "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",
     "dotenv": "^16.3.1",
-    "drizzle-orm": "^0.29.0",
     "drizzle-kit": "^0.20.0",
+    "drizzle-orm": "^0.29.0",
     "express": "^4.18.2",
     "express-rate-limit": "^7.1.5",
     "helmet": "^7.1.0",
@@ -39,7 +48,9 @@
     "zod": "^3.22.4"
   },
   "devDependencies": {
+    "@types/pg": "^8.23.1",
     "ts-node": "^10.9.2",
-    "typescript": "^5.3.3"
+    "typescript": "^5.3.3",
+    "vitest": "^2.1.9"
   }
 }

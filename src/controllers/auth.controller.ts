@@ -1,10 +1,10 @@
 import { Request, Response } from "express";
 import { authService } from "../services/auth.service";
-import { signAccessToken, signRefreshToken } from "../config/jwt";
+import { signAccessToken, verifyRefreshToken } from "../config/jwt";
 import { registerSchema, loginSchema } from "../types/schemas";
 import { successResponse, errorResponse } from "../utils/response";
 import { HTTP_STATUS } from "../utils/constants";
-import { AuthenticatedRequest } from "../types";
+import { AuthenticatedRequest, JWTPayload } from "../types";
 
 export const authController = {
   async register(req: Request, res: Response): Promise<void> {
@@ -34,9 +34,13 @@ export const authController = {
         res.status(HTTP_STATUS.BAD_REQUEST).json(errorResponse("Refresh token requerido"));
         return;
       }
-      const decoded = signRefreshToken({ userId: 0 });
-      const verified = signRefreshToken({ userId: 0 });
-      res.json(successResponse({ accessToken: signAccessToken({ userId: 0, email: "", role: "estudiante" }), refreshToken }));
+      const decoded = verifyRefreshToken(refreshToken) as JWTPayload;
+      const accessToken = signAccessToken({
+        userId: decoded.userId,
+        email: decoded.email,
+        role: decoded.role,
+      });
+      res.json(successResponse({ accessToken }));
     } catch (error: any) {
       res.status(HTTP_STATUS.UNAUTHORIZED).json(errorResponse(error.message));
     }
