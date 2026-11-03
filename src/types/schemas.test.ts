@@ -2,6 +2,7 @@ import { describe, it, expect } from "vitest";
 import {
   registerSchema,
   loginSchema,
+  refreshTokenSchema,
   courseSchema,
   subjectSchema,
   lessonSchema,
@@ -27,6 +28,12 @@ describe("schemas de validación", () => {
       email: "a@b.com",
       password: "x",
     });
+  });
+
+  it("refreshTokenSchema exige un token no vacío", () => {
+    expect(refreshTokenSchema.parse({ refreshToken: "token" })).toEqual({ refreshToken: "token" });
+    expect(() => refreshTokenSchema.parse({ refreshToken: "" })).toThrow();
+    expect(() => refreshTokenSchema.parse({})).toThrow();
   });
 
   it("courseSchema exige título", () => {
