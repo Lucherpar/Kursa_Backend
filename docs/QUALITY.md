@@ -73,7 +73,12 @@ Una tarea se considera terminada cuando:
 
 | Área | Archivo | Qué cubre |
 | :--- | :--- | :--- |
-| Esquemas Zod | `src/types/schemas.test.ts` | Registro, login, cursos, asignaturas, lecciones y tareas. |
+| Servicio de auth | `src/services/auth.service.test.ts` | Registro, login, refresh y datos públicos del usuario. |
+| Controlador de auth | `src/controllers/auth.controller.test.ts` | Registro, login, refresh, me y logout. |
+| JWT | `src/config/jwt.test.ts` | Firma, verificación y separación de secretos. |
+| Middleware de auth | `src/middleware/auth.middleware.test.ts` | Autenticación Bearer y autorización por rol. |
+| Validación Zod | `src/middleware/validation.middleware.test.ts` | Body válido, defaults y errores 400. |
+| Esquemas Zod | `src/types/schemas.test.ts` | Registro, login, refresh, cursos, asignaturas, lecciones y tareas. |
 | Respuestas | `src/utils/response.test.ts` | Formato de éxito y error. |
 | Constantes | `src/utils/constants.test.ts` | Códigos HTTP y roles. |
 

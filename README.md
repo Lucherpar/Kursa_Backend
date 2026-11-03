@@ -193,6 +193,7 @@ Endpoints principales:
 | `POST` | `/api/auth/login` | — | Inicio de sesión. |
 | `POST` | `/api/auth/refresh` | — | Renueva el access token. |
 | `GET` | `/api/auth/me` | ✅ | Datos del usuario autenticado. |
+| `POST` | `/api/auth/logout` | ✅ | Cierra la sesión en el cliente. |
 | `GET` | `/api/courses` | — | Lista de cursos. |
 | `POST` | `/api/courses` | 🔒 admin/profesor | Crea un curso. |
 | `GET` | `/api/courses/:courseId/subjects` | — | Asignaturas de un curso. |
@@ -213,7 +214,7 @@ npm run test     # obligatorio
 npm run build    # obligatorio
 ```
 
-Actualmente la suite incluye tests de esquemas Zod, helpers de respuesta y constantes.
+Actualmente la suite incluye tests de autenticación (servicio, controlador, JWT y middleware), esquemas Zod, helpers de respuesta y constantes.
 
 ---
 
