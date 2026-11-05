@@ -217,6 +217,45 @@ Actualmente la suite incluye tests de esquemas Zod, helpers de respuesta y const
 
 ---
 
+## Despliegue y CI/CD
+
+Kursa utiliza **GitHub Actions** para integración continua y **Vercel** para el despliegue en la nube.
+
+### Flujo de despliegue
+
+1. Un desarrollador abre un **PR de su rama `feature/...` a `develop`**.
+2. Un compañero revisa y aprueba la PR; se hace merge a `develop`.
+3. Cuando hay una versión lista para producción, se abre un **PR de `develop` a `main`**.
+4. Al hacer merge a `main`, se dispara el pipeline de GitHub Actions:
+
+   - **Backend**: `npm ci` → `npm test` → `npm run db:push` (aplica cambios de esquema a **Neon producción** `kursa-prod`) → `npm run build` → `vercel deploy --prod`.
+   - **Frontend**: `npm ci` → `npm test` → `npm run build` → `vercel deploy --prod`.
+
+5. Si los **tests fallan**, el despliegue no se ejecuta.
+6. Las URLs de producción se asignan automáticamente por Vercel en el primer despliegue.
+
+### Variables de entorno de producción
+
+Nunca subas `.env` a git. Configura en el dashboard de Vercel (Settings → Environment Variables):
+
+- **Backend**: `DATABASE_URL` (Neon prod), `JWT_SECRET`, `REFRESH_TOKEN_SECRET`, `CORS_ORIGIN`, `SOCKET_ORIGIN`, `PORT`.
+- **Frontend**: `VITE_API_URL`, `VITE_SOCKET_URL`.
+
+### Secrets de GitHub Actions
+
+Cada repositorio necesita estos secretos (Settings → Secrets and variables → Actions):
+
+| Secreto | Backend | Frontend |
+| :--- | :--- | :--- |
+| `VERCEL_TOKEN` | Token de Vercel | mismo token |
+| `VERCEL_PROJECT_ID` | `prj_4Q4jJRJwFtEHr5JVVFTO1JD5pg8X` | `prj_RODwVnDv2nrUb2KtJ45ubc9SwvmF` |
+| `VERCEL_ORG_ID` | `team_P0gukamYQ8ZDze44OZJX99kM` | `team_P0gukamYQ8ZDze44OZJX99kM` |
+| `DATABASE_URL` | Cadena de conexión Neon producción | — |
+
+Obtén `VERCEL_TOKEN` con `vercel login` o desde https://vercel.com/account/tokens.
+
+---
+
 ## Equipo
 
 | Integrante | Rol | GitHub |
