@@ -29,6 +29,10 @@ jobs:
           node-version: '24'
           cache: 'npm'
       - run: npm ci
+      - name: Push database schema to Neon Production
+        run: npm run db:push
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
       - run: npm run build
       - name: Install Vercel CLI
         run: npm install --global vercel@latest
