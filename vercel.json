@@ -4,11 +4,6 @@
   "buildCommand": "npm run build",
   "devCommand": "npm run dev",
   "installCommand": "npm ci",
-  "functions": {
-    "api/index.js": {
-      "runtime": "nodejs@18.x"
-    }
-  },
   "routes": [
     { "src": "/(.*)", "dest": "/api/index.js" }
   ]
