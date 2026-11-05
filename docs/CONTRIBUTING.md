@@ -83,7 +83,32 @@ Toda PR debe:
 
 Consulta [QUALITY.md](QUALITY.md#6-definition-of-done-dod).
 
-## 7. Prohibiciones
+## 7. Flujo CI/CD y despliegue a producción
+
+Cuando un PR se fusiona en `main`, se activa el pipeline de GitHub Actions:
+
+| Paso | Backend | Frontend |
+| :--- | :--- | :--- |
+| 1 | `npm ci` | `npm ci` |
+| 2 | `npm test` | `npm test` |
+| 3 | `npm run db:push` (Neon prod `kursa-prod`) | — |
+| 4 | `npm run build` | `npm run build` |
+| 5 | `vercel deploy --prod` | `vercel deploy --prod` |
+
+Si los tests fallan, el despliegue **no** se ejecuta.
+
+Los secretos necesarios en GitHub Actions (Settings → Secrets and variables → Actions) son:
+
+| Secreto | Valor |
+| :--- | :--- |
+| `VERCEL_TOKEN` | Token de Vercel (`vercel login` o https://vercel.com/account/tokens) |
+| `VERCEL_PROJECT_ID` | Backend: `prj_4Q4jJRJwFtEHr5JVVFTO1JD5pg8X` · Frontend: `prj_RODwVnDv2nrUb2KtJ45ubc9SwvmF` |
+| `VERCEL_ORG_ID` | `team_P0gukamYQ8ZDze44OZJX99kM` |
+| `DATABASE_URL` (solo backend) | Cadena de conexión Neon producción (`kursa-prod`) |
+
+Las variables de entorno de producción se configuran en el dashboard de Vercel (Settings → Environment Variables) de cada proyecto.
+
+## 8. Prohibiciones
 
 - Push directo a `main`.
 - Subir secretos o `.env`.
