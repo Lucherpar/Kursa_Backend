@@ -57,8 +57,10 @@ Los errores no controlados pasan por `errorHandler`, que registra el error y dev
 
 ## 4. Autenticación y autorización
 
-- **Registro/Login** devuelven `accessToken` y `refreshToken`.
+- **Registro** devuelve el usuario creado (sin `passwordHash`); **Login** devuelve `accessToken`, `refreshToken` y los datos públicos del usuario.
 - El access token se firma con `JWT_SECRET` y el refresh con `REFRESH_TOKEN_SECRET`.
+- **Refresh** valida el refresh token y comprueba que el usuario siga existiendo antes de emitir un nuevo access token.
+- **Logout** cierra la sesión en el cliente; al ser JWT stateless, el cliente debe descartar ambos tokens.
 - El middleware `authenticate` valida el header `Authorization: Bearer <token>` y adjunta el payload a `req.user`.
 - `authorize(...roles)` restringe el acceso por rol (`admin`, `profesor`, `estudiante`).
 

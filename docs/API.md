@@ -32,10 +32,11 @@ Roles: `admin`, `profesor`, `estudiante`.
 
 | Método | Ruta | Auth | Body | Descripción |
 | :--- | :--- | :---: | :--- | :--- |
-| `POST` | `/auth/register` | — | `{ email, password, role? }` | Registro. Devuelve el usuario creado. |
-| `POST` | `/auth/login` | — | `{ email, password }` | Login. Devuelve `accessToken` y `refreshToken`. |
-| `POST` | `/auth/refresh` | — | `{ refreshToken }` | Devuelve un nuevo `accessToken`. |
+| `POST` | `/auth/register` | — | `{ email, password, role? }` | Registro. Devuelve el usuario creado (sin `passwordHash`). |
+| `POST` | `/auth/login` | — | `{ email, password }` | Login. Devuelve `user`, `accessToken` y `refreshToken`. |
+| `POST` | `/auth/refresh` | — | `{ refreshToken }` | Valida el refresh token y devuelve un nuevo `accessToken`. |
 | `GET` | `/auth/me` | ✅ | — | Datos del usuario autenticado. |
+| `POST` | `/auth/logout` | ✅ | — | Cierra la sesión. El cliente debe descartar sus tokens. |
 
 ## Cursos
 

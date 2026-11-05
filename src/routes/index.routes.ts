@@ -2,7 +2,7 @@ import { Router, RequestHandler, Response } from "express";
 import { authController } from "../controllers/auth.controller";
 import { validate } from "../middleware/validation.middleware";
 import { authenticate, authorize } from "../middleware/auth.middleware";
-import { registerSchema, loginSchema } from "../types/schemas";
+import { registerSchema, loginSchema, refreshTokenSchema } from "../types/schemas";
 import { courseController, subjectController, lessonController } from "../controllers/course.controller";
 import { assignmentController, uploadController, recordingController } from "../controllers/assignment.controller";
 import { upload } from "../middleware/upload.middleware";
@@ -22,8 +22,9 @@ const router = Router();
 // Auth
 router.post("/auth/register", validate(registerSchema), handler(authController.register));
 router.post("/auth/login", validate(loginSchema), handler(authController.login));
-router.post("/auth/refresh", handler(authController.refresh));
+router.post("/auth/refresh", validate(refreshTokenSchema), handler(authController.refresh));
 router.get("/auth/me", authenticate, handler(authController.me));
+router.post("/auth/logout", authenticate, handler(authController.logout));
 
 // Cursos
 router.get("/courses", handler(courseController.list));
