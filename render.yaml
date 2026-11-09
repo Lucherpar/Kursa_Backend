@@ -26,7 +26,5 @@ services:
         value: 30d
       - key: MAX_FILE_SIZE
         value: 10485760
-      - key: UPLOAD_DIR
-        value: /tmp/uploads
     healthCheckPath: /api/courses
     autoDeploy: true

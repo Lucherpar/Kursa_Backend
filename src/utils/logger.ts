@@ -1,11 +1,15 @@
-import { createWriteStream } from "fs";
+import { createWriteStream, mkdirSync } from "fs";
 import { join } from "path";
 
 const logDir = process.env.LOG_DIR || join(process.cwd(), "logs");
 let logFile: NodeJS.WritableStream | null = null;
 
 try {
+  mkdirSync(logDir, { recursive: true });
   logFile = createWriteStream(join(logDir, "app.log"), { flags: "a" });
+  logFile.on("error", () => {
+    logFile = null;
+  });
 } catch {
   logFile = null;
 }

@@ -1,0 +1,9 @@
+{
+  "framework": null,
+  "buildCommand": "npm run build",
+  "devCommand": "npm run dev",
+  "installCommand": "npm ci",
+  "routes": [
+    { "src": "/(.*)", "dest": "/api/index.js" }
+  ]
+}
